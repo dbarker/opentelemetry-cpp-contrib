@@ -56,6 +56,8 @@ endif()
 
 set_target_version(opentelemetry_exporter_geneva_metrics)
 
+set_target_properties(opentelemetry_exporter_geneva_metrics PROPERTIES EXPORT_NAME geneva_metrics_exporter)
+
 if(BUILD_TESTING)
   if(EXISTS ${CMAKE_BINARY_DIR}/lib/libgtest.a)
     # Prefer GTest from build tree. GTest is not always working with
@@ -90,7 +92,14 @@ if(BUILD_TESTING)
     TEST_LIST geneva_metrics_exporter_test)
 endif()
 
-if(OPENTELEMETRY_INSTALL)
+if(NOT MAIN_PROJECT)
+  otel_add_component(
+    COMPONENT exporters_geneva_metrics
+    TARGETS opentelemetry_exporter_geneva_metrics
+    FILES_DIRECTORY include/opentelemetry/exporters/geneva
+    FILES_DESTINATION include/opentelemetry/exporters
+    FILES_MATCHING PATTERN "*.h")
+elseif(OPENTELEMETRY_INSTALL)
   install(
     TARGETS opentelemetry_exporter_geneva_metrics
     EXPORT "${PROJECT_NAME}-target"
